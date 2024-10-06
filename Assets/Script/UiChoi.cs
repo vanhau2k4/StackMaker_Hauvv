@@ -14,6 +14,7 @@ public class UiChoi : MonoBehaviour
     public GameObject layGame; 
 
     public Button play2Button;
+    public Button choiLaiButton;
     public Button buttonDiem;
     public TextMeshProUGUI diem;
 
@@ -42,6 +43,7 @@ public class UiChoi : MonoBehaviour
     {
         playButton.onClick.AddListener(OnPlayButtonClicked);
         play2Button.onClick.AddListener(ChuyenMan2);
+        choiLaiButton.onClick.AddListener(Quaylai);
         player = FindObjectOfType<Player>();
 
         Play1.onClick.AddListener(() => SelectMap(0));
@@ -71,12 +73,24 @@ public class UiChoi : MonoBehaviour
     public void Find()
     {
         play2Button.gameObject.SetActive(true);
+        choiLaiButton.gameObject.SetActive(true);
         buttonDiem.gameObject.SetActive(true);
     }
     public void FindHuy()
     {
         play2Button.gameObject.SetActive(false);
+        choiLaiButton.gameObject.SetActive(false);
         buttonDiem.gameObject.SetActive(false);
+    }
+    public void Quaylai()
+    {
+        if (currentMapInstance != null)
+        {
+            Destroy(currentMapInstance);
+        }
+        SpawnMap(currentMapIndex);
+        FindHuy();
+        playerInstance.transform.position = new Vector3(3.505f, 2.55f, -5.47f);
     }
     private void ChuyenMan2()
     {
