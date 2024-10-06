@@ -6,10 +6,15 @@ public class GroundTrang : MonoBehaviour
 {
     public GameObject brike;
     private BoxCollider boxCollider;
-
+    Player player;
     private void Start()
     {
         boxCollider = GetComponent<BoxCollider>();
+        player = FindObjectOfType<Player>();
+        if (player == null)
+        {
+            Debug.LogError("Player not found!");
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -17,8 +22,12 @@ public class GroundTrang : MonoBehaviour
         if (other.CompareTag("Player"))
         {
 
-            brike.SetActive(true);
-            Invoke(nameof(Delay),0.1f);  
+            
+            if (player.listBricks.Count > 0)
+            {
+                brike.SetActive(true);
+                Invoke(nameof(Delay),0.1f);
+            }
         }
     }
 
@@ -26,7 +35,11 @@ public class GroundTrang : MonoBehaviour
     {
         if (boxCollider != null)
         {
-            Destroy(boxCollider); 
+            Destroy(boxCollider);
+        }
+        else
+        {
+            Debug.LogWarning("BoxCollider is already null!");
         }
     }
 }

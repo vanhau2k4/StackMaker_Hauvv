@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 using System;
 using UnityEditor;
 using UnityEngine.Assertions.Must;
+using Cinemachine;
 
 public class Player : MonoBehaviour
 {
@@ -54,12 +55,19 @@ public class Player : MonoBehaviour
     private UiChoi uiChoi;
 
     Player player;
+    public Transform followPoint; 
+    public Transform lookAtPoint; 
+
+
+
 
     void Start()
     {
         GetComponent<Rigidbody>().useGravity = false;
         player = GetComponent<Player>();
         uiChoi = FindObjectOfType<UiChoi>();
+
+        GanCamera();
     }
 
     void Update()
@@ -138,7 +146,10 @@ public class Player : MonoBehaviour
 
 
     }
-
+    private void GanCamera()
+    {
+        CameraSetup.GanCamera(this);
+    }
     public void Swipes()
     {
         if (Application.isEditor)
@@ -151,33 +162,41 @@ public class Player : MonoBehaviour
             {
                 currentPosition = Input.mousePosition;
                 Vector2 distance = (Vector2)currentPosition - startTouchPosition;
+
                 if (!stopTouch)
                 {
-                    if (distance.x < -swipeRange && isGroundedLeft && !isMovingLeft)
+                    if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
                     {
-                        Debug.Log("left");
-                        isMovingLeft = true;
-                        stopTouch = true;
+                        if (distance.x < -swipeRange && isGroundedLeft && !isMovingLeft)
+                        {
+                            Debug.Log("left");
+                            isMovingLeft = true;
+                            stopTouch = true;
+                        }
+                        else if (distance.x > swipeRange && isGroundedRight && !isMovingRight)
+                        {
+                            Debug.Log("right");
+                            isMovingRight = true;
+                            stopTouch = true;
+                        }
                     }
-                    else if (distance.x > swipeRange && isGroundedRight && !isMovingRight)
+                    else
                     {
-                        Debug.Log("right");
-                        isMovingRight = true;
-                        stopTouch = true;
+                        if (distance.y > swipeRange && isGroundedUp && !isMovingUp)
+                        {
+                            Debug.Log("up");
+                            isMovingUp = true;
+                            stopTouch = true;
+                        }
+                        else if (distance.y < -swipeRange && isGroundedDown && !isMovingDown)
+                        {
+                            Debug.Log("down");
+                            isMovingDown = true;
+                            stopTouch = true;
+                        }
                     }
-                    else if (distance.y > swipeRange && isGroundedUp && !isMovingUp)
-                    {
-                        Debug.Log("up");
-                        isMovingUp = true;
-                        stopTouch = true;
-                    }
-                    else if (distance.y < -swipeRange && isGroundedDown && !isMovingDown)
-                    {
-                        Debug.Log("down");
-                        isMovingDown = true;
-                        stopTouch = true;
-                    }
-                    else if(Mathf.Abs(distance.x) < tapRange && Mathf.Abs(distance.y) < tapRange)
+
+                    if (Mathf.Abs(distance.x) < tapRange && Mathf.Abs(distance.y) < tapRange)
                     {
                         stopTouch = true;
                         return;
@@ -189,58 +208,63 @@ public class Player : MonoBehaviour
     }
 
 
+
     public void Swipe()
     {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        if (Input.touchCount > 0)
         {
-            startTouchPosition = Input.GetTouch(0).position;
-        }
+            Touch touch = Input.GetTouch(0);
 
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
-        {
-            currentPosition = Input.GetTouch(0).position;
-            Vector2 distance = currentPosition - startTouchPosition;
-
-            if (!stopTouch)
+            if (touch.phase == TouchPhase.Began)
             {
+                startTouchPosition = touch.position;
+                stopTouch = false;
+            }
+
+            if (touch.phase == TouchPhase.Moved && !stopTouch)
+            {
+                currentPosition = touch.position;
+                Vector2 distance = currentPosition - startTouchPosition;
+
+                // Swipe left
                 if (distance.x < -swipeRange && isGroundedLeft && !isMovingLeft)
                 {
-                    Debug.Log("left");
+                    Debug.Log("Swipe Left");
                     isMovingLeft = true;
                     stopTouch = true;
                 }
                 else if (distance.x > swipeRange && isGroundedRight && !isMovingRight)
                 {
-                    Debug.Log("right");
+                    Debug.Log("Swipe Right");
                     isMovingRight = true;
                     stopTouch = true;
                 }
                 else if (distance.y > swipeRange && isGroundedUp && !isMovingUp)
                 {
-                    Debug.Log("up");
+                    Debug.Log("Swipe Up");
                     isMovingUp = true;
                     stopTouch = true;
                 }
                 else if (distance.y < -swipeRange && isGroundedDown && !isMovingDown)
                 {
-                    Debug.Log("down");
+                    Debug.Log("Swipe Down");
                     isMovingDown = true;
                     stopTouch = true;
                 }
                 else if (Mathf.Abs(distance.x) < tapRange && Mathf.Abs(distance.y) < tapRange)
                 {
+                    Debug.Log("Tap detected");
                     stopTouch = true;
-                    return;
                 }
             }
-            stopTouch = false;
-        }
 
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
-        {
-            stopTouch = false;
+            if (touch.phase == TouchPhase.Ended)
+            {
+                stopTouch = false;
+            }
         }
     }
+
 
     #region Collision
     public virtual bool IsGroundDetectedUP() => Physics.Raycast(groundCheckUp.position,
@@ -255,8 +279,6 @@ public class Player : MonoBehaviour
 
     public virtual bool IsGroundDetectedRight() => Physics.Raycast(groundCheckRight.position,
     Vector2.down, groundCheckDistanceRight, WhatIsGround);
-
-
     protected virtual void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -274,6 +296,7 @@ public class Player : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(groundCheckRight.position, new Vector3(groundCheckRight.position.x,
             groundCheckRight.position.y - groundCheckDistanceRight, groundCheckRight.position.z));
+
     }
     #endregion
 
@@ -319,7 +342,11 @@ public class Player : MonoBehaviour
             }
             else
             {
-                Debug.Log("dfs");
+                Debug.Log("Không còn gạch nào");
+                isMovingRight = false;
+                isMovingUp = false;
+                isMovingDown = false;
+                isMovingLeft = false;
                 isMoving = false;
             }
         }
@@ -352,33 +379,5 @@ public class Player : MonoBehaviour
             anim.SetTrigger("Find");
         }
     }
-
-
-
-
-
-    /*    private enum DraggedDirection
-        {
-            Up,
-            Down,
-            Right,
-            Left
-        }
-        private DraggedDirection GetDragDirection(Vector3 dragVector)
-        {
-            float positiveX = Mathf.Abs(dragVector.x);
-            float positiveY = Mathf.Abs(dragVector.y);
-            DraggedDirection draggedDir;
-            if (positiveX > positiveY)
-            {
-                draggedDir = (dragVector.x > 0) ? DraggedDirection.Right : DraggedDirection.Left;
-            }
-            else
-            {
-                draggedDir = (dragVector.y > 0) ? DraggedDirection.Up : DraggedDirection.Down;
-            }
-            Debug.Log(draggedDir);
-            return draggedDir;
-        }*/
 
 }
