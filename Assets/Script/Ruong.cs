@@ -18,7 +18,6 @@ public class Ruong : MonoBehaviour
             if (gameObject != null)
             {
                 gameObject.SetActive(false);
-                Debug.Log("thay");
                 ruongMo.gameObject.SetActive(true);
             }
             return true; 

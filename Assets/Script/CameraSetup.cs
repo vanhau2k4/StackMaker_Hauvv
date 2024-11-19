@@ -6,11 +6,10 @@ using UnityEngine;
 public class CameraSetup : MonoBehaviour
 {
     public GameObject player; 
-    private CinemachineVirtualCamera virtualCamera;
+    public CinemachineVirtualCamera virtualCamera;
 
     void Start()
     {
-        virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
 
         if (virtualCamera != null && player != null)
         {

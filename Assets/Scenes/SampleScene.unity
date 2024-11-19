@@ -893,6 +893,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1665665691852194, guid: c84b41a4245d5c241bc7ff57b0cca3f4, type: 3}
+  virtualCamera: {fileID: 219402596}
 --- !u!1 &226779241
 GameObject:
   m_ObjectHideFlags: 0
