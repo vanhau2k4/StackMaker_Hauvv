@@ -6237,20 +6237,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   groundCheckUp: {fileID: 5666177061485974970}
-  groundCheckDistanceUp: 45
-  WhatIsGround:
+  groundCheckDown: {fileID: 8421268855612635916}
+  groundCheckLeft: {fileID: 9127460687192118368}
+  groundCheckRight: {fileID: 5301566644098429248}
+  groundCheckDistance: 60
+  groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  groundCheckDown: {fileID: 8421268855612635916}
-  groundCheckDistanceDown: 45
-  groundCheckLeft: {fileID: 9127460687192118368}
-  groundCheckDistanceLeft: 45
-  groundCheckRight: {fileID: 5301566644098429248}
-  groundCheckDistanceRight: 45
-  isGroundedUp: 1
-  isGroundedDown: 1
-  isGroundedLeft: 1
-  isGroundedRight: 1
   listBricks: []
   followPoint: {fileID: 9096749557029564490}
   lookAtPoint: {fileID: 8682881905051247784}
